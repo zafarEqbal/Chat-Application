@@ -83,13 +83,14 @@
 //         </div>
 //     )
 // }
+import { setSocket } from '../Redux/socketSlice';
 import React, { useEffect, useState } from 'react'
 import { BiSearchAlt2 } from "react-icons/bi";
 import OtherUsers from './OtherUsers';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { resetUserState, setAuthUser } from '../Redux/userSlice';
+import { resetUserState, setAuthUser,clearUnreadMessage } from '../Redux/userSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
 export default function Sidebear() {
@@ -123,8 +124,10 @@ export default function Sidebear() {
             axios.defaults.withCredentials = true;
             const res = await axios.get('http://localhost:3000/api/v1/user/logout');
             localStorage.removeItem("authUser");
+            localStorage.removeItem("selectedUser");
             dispatch(resetUserState());
             dispatch(setAuthUser(null));
+            dispatch(setSocket(null));
             navigate("/login");
             toast.success(res.data.message);
         } catch (error) {

@@ -41,7 +41,7 @@ export default function SendInput() {
           placeholder='send a message....'
           className='input border text-sm rounded-lg w-full block  p-6 '
         />
-        <button type='submit' className='absolute  flex inset-y-0 end-0 pr-3  items-center'>
+        <button type='submit' className='absolute  flex inset-y-1 end-0 pr-3  items-center'>
           <IoMdSend />
         </button>
       </div>

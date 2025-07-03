@@ -7,6 +7,7 @@ const store= configureStore({
         user:userReducer,
         message:messageReducer,
         socket:socketReducer,
+        
 
     }
 });

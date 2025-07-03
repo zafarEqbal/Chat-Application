@@ -31,8 +31,18 @@ export default function MessageContainer(user) {
         </div>
 
       </div>
-      <MessagePage/>
-      <SendInput/>
+      
+      {/* <MessagePage/>
+      <SendInput/> */}
+      <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex-1 overflow-auto">
+          <MessagePage />
+        </div>
+        <div className="">
+          <SendInput />
+        </div>
+      </div>
     </div>
+    //</div>
   )
 }

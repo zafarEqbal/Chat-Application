@@ -1,92 +1,120 @@
-import { useState,useEffect } from 'react'
-import './App.css'
-import './index.css'
-import Homepage from './components/Homepage'
-import FrontPage from './components/FrontPage'
-import Signup from './components/Signup'
-import Login from './components/Login'
-import { useDispatch, useSelector } from 'react-redux'
-import { setAuthUser, setOnlineUsers } from './Redux/userSlice'
-import {createBrowserRouter,RouterProvider}  from "react-router-dom"
-import {io} from 'socket.io-client'
-import { setSocket } from './Redux/socketSlice'
-import OtpVerify from './components/otpVerify'
+import { useEffect, useState } from 'react';
+import './App.css';
+import './index.css';
+import Homepage from './components/Homepage';
+import FrontPage from './components/FrontPage';
+import Signup from './components/Signup';
+import Login from './components/Login';
+import OtpVerify from './components/otpVerify';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAuthUser, setOnlineUsers, setUnreadMessage } from './Redux/userSlice';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import { setSocket } from './Redux/socketSlice';
+import { addMessage } from './Redux/messageSlice'; // Make sure this is correctly defined
 
 function AuthRoute() {
   const { authUser } = useSelector((state) => state.user);
-
   return authUser ? <Homepage /> : <FrontPage />;
 }
+
+// Routes
 const router = createBrowserRouter([
   {
-    path:"/register",
-    element:<Signup/>
+    path: '/',
+    element: <AuthRoute />,
   },
   {
-    path:"/login",
-    element:<Login/>
+    path: '/register',
+    element: <Signup />,
   },
   {
-    path: "/", // ✅ Add this route
-    element: <AuthRoute/>,
+    path: '/login',
+    element: <Login />,
   },
   {
-  path: "/verify-otp",
-  element: <OtpVerify />
-}
-])
-
-
-
+    path: '/verify-otp',
+    element: <OtpVerify />,
+  }
+]);
 
 function App() {
-  const {authUser} = useSelector(store=>store.user);
+  const { authUser } = useSelector((state) => state.user);
+  const socket = useSelector((state) => state.socket.socket); // ⬅ get socket from redux
   const dispatch = useDispatch();
-  //const [socket,setSocket] = useState(null)
+
+  // 1️⃣ Set up socket on login
   useEffect(() => {
-  let newsocket;
+    let newsocket;
 
-  if (authUser) {
-   newsocket = io('http://localhost:3000', {
-    // newsocket = io('http://192.168.1.9:3000', {
-      query: {
-        userId: authUser._id
-      }
-    });
+    if (authUser) {
+      newsocket = io('http://localhost:3000', {
+        query: {
+          userId: authUser._id
+        },
+      });
 
-    dispatch(setSocket(newsocket));
+      dispatch(setSocket(newsocket));
 
-    newsocket.on('getOnlineUsers', (getOnlineUsers) => {
-      dispatch(setOnlineUsers(getOnlineUsers));
-    });
-  }
-
-  // Cleanup when authUser becomes null or component unmounts
-  return () => {
-    if (newsocket) {
-      newsocket.disconnect();
-      dispatch(setSocket(null));
+      newsocket.on('getOnlineUsers', (users) => {
+        dispatch(setOnlineUsers(users));
+      });
     }
-  };
-}, [authUser]);
 
-  const [count, setCount] = useState(0)
-  
+    return () => {
+      if (newsocket) {
+        newsocket.disconnect();
+        dispatch(setSocket(null));
+      }
+    };
+  }, [authUser]);
 
+  // 2️⃣ Listen for incoming messages
   useEffect(() => {
-    const storedUser = localStorage.getItem("authUser");
+    if (!socket) return;
+
+    const handleReceiveMessage = async (message) => {
+      const selectedUser = store.getState().user.selectedUser;
+
+      if (!selectedUser || selectedUser._id !== message.from) {
+        dispatch(setUnreadMessage({ fromUserId: message.from }));
+
+        // 🔊 Play sound
+        try {
+          const audio = new Audio('/notification.wav');
+          await audio.play();
+        } catch (err) {
+          console.warn("🔇 Autoplay blocked by browser:", err);
+        }
+
+        // 🔔 Show toast
+        toast.success(`📩 New message from ${message.fromName || "someone"}`);
+      }
+
+      dispatch(addMessage(message)); // store message
+    };
+
+    socket.on('receiveMessage', handleReceiveMessage);
+
+    return () => {
+      socket.off('receiveMessage', handleReceiveMessage);
+    };
+  }, [socket]);
+
+  // 3️⃣ Restore user on refresh
+  useEffect(() => {
+    const storedUser = localStorage.getItem('authUser');
     if (storedUser) {
       dispatch(setAuthUser(JSON.parse(storedUser)));
     }
   }, []);
+
   return (
-    <>
-    <div className='p-4 h-screen  flex items-center justify-center ' >
-      <RouterProvider router={router}/>
+    <div className='p-4 h-screen flex items-center justify-center'>
+      <RouterProvider router={router} />
     </div>
-     
-    </>
-  )
+  );
 }
 
-export default App
+export default App;
+

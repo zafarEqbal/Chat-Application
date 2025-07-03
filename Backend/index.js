@@ -6,6 +6,9 @@ import cookieParser from 'cookie-parser'
 import message_route from "./routes/message_routes.js"
 import cors from 'cors'
 import {app,server} from './Socket/socket.js'
+import { initializeSocket } from './Socket/initializeSocket.js'
+
+
 //const app = express();
 dotenv.config({});
 const PORT = process.env.PORT || 8000;
@@ -15,8 +18,7 @@ app.use(cookieParser());
 app.use(express.json())
 const corsoption={
     origin:'http://localhost:5173',
-    // origin: 'http://192.168.1.9:5173',
-    // origin: ['http://localhost:5173', 'http://192.168.1.9:5173'],
+    
     
     credentials:true,
 }
