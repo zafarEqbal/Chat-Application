@@ -217,7 +217,7 @@ function Signup() {
     try {
       // Step 1: Send OTP
       await axios.post(
-        'http://localhost:3000/api/v1/user/send-otp',
+        'https://chat-application-backendd.onrender.com/api/v1/user/send-otp',
         { Email: email },
         {
           headers: { 'Content-Type': 'application/json' },
