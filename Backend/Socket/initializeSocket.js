@@ -10,7 +10,7 @@ export const getReceiverSocketId = (receiverId) => {
 export function initializeSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173", // change this for production
+      origin: "https://chat-application-frontend-ii88.onrender.com", // change this for production
       methods: ["GET", "POST"],
     },
   });
