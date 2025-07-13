@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 const corsoption = {
-    origin: 'http://localhost:5173',
+    origin: 'https://chat-application-frontend-ii88.onrender.com',
     credentials: true,
 };
 app.use(cors(corsoption));
