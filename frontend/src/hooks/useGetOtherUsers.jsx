@@ -12,7 +12,7 @@ export default function useGetOtherUsers() {
                 
                 
                 console.log(res);
-                dispatch(setOtherUser(res.data));
+                dispatch(setOtherUser(res.data.users));
             } catch (error) {
                 console.log(error)
             }
