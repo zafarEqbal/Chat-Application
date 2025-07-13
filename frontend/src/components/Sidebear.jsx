@@ -122,7 +122,7 @@ export default function Sidebear() {
     const logoutHandler = async () => {
         try {
             axios.defaults.withCredentials = true;
-            const res = await axios.get('http://localhost:3000/api/v1/user/logout');
+            const res = await axios.get('https://chat-application-backendd.onrender.com/api/v1/user/logout');
             localStorage.removeItem("authUser");
             localStorage.removeItem("selectedUser");
             dispatch(resetUserState());
