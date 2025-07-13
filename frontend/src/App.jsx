@@ -48,7 +48,7 @@ function App() {
     let newsocket;
 
     if (authUser) {
-      newsocket = io('http://localhost:3000', {
+      newsocket = io('https://chat-application-backendd.onrender.com', {
         query: {
           userId: authUser._id
         },
