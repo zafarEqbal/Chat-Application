@@ -17,7 +17,7 @@ function Login() {
         const { username, password } = user;
         try {
             const res = await axios.post(
-                'http://localhost:3000/api/v1/user/login',
+                'https://chat-application-backendd.onrender.com/api/v1/user/login',
                 {
                     UserName: username,
                     Password: password,
